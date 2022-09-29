@@ -15,6 +15,7 @@ function run()
 
     document.getElementById("object").style.width = document.getElementById("object").style.height = Math.cbrt(V)*25 + "px";
     document.getElementById("object").style.top = -50+"px";
+    document.getElementById("object").style.left = 250 - Math.cbrt(V)*25/2 + "px";
     var dt = 0.1;
     var a = 9.8;
     var v = 0; 
