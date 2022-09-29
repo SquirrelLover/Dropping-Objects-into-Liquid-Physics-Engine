@@ -24,7 +24,7 @@ function run()
     clearInterval(id);
     id = setInterval(frame, 10);
     function frame() {
-    if ((x > 0 && Math.abs(v) <= 0.01) || x > 250) {
+    if ((x > 0 && Math.abs(a) <= 0.01) || x > 250) {
         clearInterval(id);
     } else {
         x += v*dt;
