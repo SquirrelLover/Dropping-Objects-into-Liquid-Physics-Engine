@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<head>
+    <title>Dropping objects into a liquid</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>Dropping objects into a liquid</h1>
+    <p>Fluid density:</p><input type="range" min="1" max="15000" value="1000" class="slider" id="fluidro" oninput = "changeval('fluidroval', document.getElementById('fluidro').value)">
+    <p id="fluidroval">1000</p><br>
+    <p>Object denstiy:</p><input type="range" min="1" max="15000" value="1500" class="slider" id="objectro" oninput = "changeval('objectroval', document.getElementById('objectro').value)">
+    <p id="objectroval">1500</p><br>
+    <p>Object volume:</p><input type="range" min = "1" max="125" value="1" class = "slider" id ="volume" oninput = "changeval('volumeval', document.getElementById('volume').value)">
+    <p id="volumeval">1</p><br><br>
+    <p>Fluid viscosity:</p><input type="range" min = "0" max="3000" value="50" class = "slider" id ="vis" oninput = "changeval('visval', document.getElementById('vis').value)">
+    <p id="visval">50</p><br><br>
+    <input type="button" value = "Go" id = "go" onclick = "run()"><br><br>
+    <div id = "container">
+        <div id = "fluid">
+            <div id = "object"></div>
+        </div>
+        <div id = "blank"></div>
+    </div>
+</body>
