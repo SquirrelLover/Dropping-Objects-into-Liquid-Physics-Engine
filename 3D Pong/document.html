@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>3D Pong</title>
+		<style>
+			body {margin: 0; position: fixed; bottom: 0;}
+		</style>
+	</head>
+	<body>
+		<canvas id = "c"></canvas>
+		<script src="three.js"></script>
+		<script>
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.z = 3;
+      camera.position.y = -6;
+      camera.rotation.x = Math.PI / 4;
+
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      const light = new THREE.PointLight(0xffffff, 1, 100);
+      light.position.set(0, -10, 5);
+      scene.add(light);
+
+      //table
+      const table_geo = new THREE.PlaneGeometry(5,9);
+      const table_material = new THREE.MeshBasicMaterial({color: 0x242B64, side: THREE.DoubleSide});
+      const table = new THREE.Mesh(table_geo, table_material);
+      scene.add(table);
+
+      const wline_geo = new THREE.PlaneGeometry(5,0.10);
+      const hline_geo = new THREE.PlaneGeometry(0.10,9);
+      const line_material = new THREE.MeshBasicMaterial({color: 0xFFFFFF, side: THREE.DoubleSide}); 
+      const wline1 = new THREE.Mesh(wline_geo, line_material);
+      wline1.position.y = 4.45;
+      scene.add(wline1);
+      const wline2 = new THREE.Mesh(wline_geo, line_material);
+      wline2.position.y = -4.5;
+      scene.add(wline2);
+      const hline1 = new THREE.Mesh(hline_geo, line_material);
+      hline1.position.x = 2.45;
+      hline1.position.z = 0.0001;
+      scene.add(hline1);
+      const hline2 = new THREE.Mesh(hline_geo, line_material);
+      hline2.position.x = -2.45;
+      hline2.position.z = 0.0001;
+      scene.add(hline2);
+      const hline3 = new THREE.Mesh(hline_geo, line_material);
+      scene.add(hline3);
+
+      //net
+      const net_geo = new THREE.PlaneGeometry(5, 0.5); 
+      const net_material = new THREE.MeshBasicMaterial({color: 0xEBECF0, side: THREE.DoubleSide});
+      const net = new THREE.Mesh(net_geo, net_material);
+      net.rotation.x = Math.PI / 2;
+      net.position.z = 0.25;
+      scene.add(net);
+      
+      //player paddle
+      const paddle_geo = new THREE.CylinderGeometry(0.25, 0.25, 0.07, 32);
+      const paddle_material = new THREE.MeshPhongMaterial({color: 0xD30000});
+      const paddle1 = new THREE.Mesh(paddle_geo, paddle_material);
+      paddle1.position.y = -4.5;
+      paddle1.position.z = 1;
+      scene.add(paddle1);
+      const hitbox1 = new THREE.Box3();
+
+      //computer paddle
+      const paddle2 = new THREE.Mesh(paddle_geo, paddle_material);
+      paddle2.position.y = 4.5;
+      paddle2.position.z = 1;
+      scene.add(paddle2);
+      const hitbox2 = new THREE.Box3();
+
+      //ball
+      const ball_geo = new THREE.SphereGeometry(0.07, 32, 16 );
+      const ball_material = new THREE.MeshPhongMaterial({ color: 0xD4A017});
+      const ball = new THREE.Mesh(ball_geo, ball_material);
+      ball.position.z = 1;
+      scene.add(ball);
+      const hitbox3 = new THREE.Box3();
+
+      //arrow keys
+      document.onkeydown = function(e) 
+      {
+        switch (e.keyCode) 
+          {
+            case 37:
+            paddle1.rotation.z += 0.2;
+            break;
+            case 38:
+            paddle1.rotation.x -= 0.2;
+            break;
+            case 39:
+            paddle1.rotation.z -= 0.2;
+            break;
+            case 40:
+            paddle1.rotation.x += 0.2;
+            break;
+            case 87:
+            paddle1.position.y += 0.2;
+            break;
+            case 65:
+            paddle1.position.x -= 0.2;
+            break;
+            case 83:
+            paddle1.position.y -= 0.2;
+            break;
+            case 68:
+            paddle1.position.x += 0.2;
+            break;
+            case 32:
+            paddle1.position.z += 0.2;
+            break;
+            case 86:
+            paddle1.position.z -= 0.2;
+            break;
+          }
+        };
+      
+      var score1 = 0;
+      var score2 = 0;
+      let id = null;
+      var vx = 0;
+      var vy = -0.15;
+      var vz = 0;
+      const g = 0.01;
+      var bounce = 0;
+      var pass = 0;
+      clearInterval(id);
+      id = setInterval(frame, 10);
+      function frame() 
+      {
+        var x = ball.position.x;
+        var y = ball.position.y;
+        var z = ball.position.z;
+        if (z <= -5 || y >= 10 || y <= -10 || x >= 8 || x <= -8 || bounce >= 2 || (y == 0 && z <= 0.535) || (vz >= 0 && x >= -2.5 && x <= 2.5 && y >= -4.5 && y <= 4.5 && z <= -0.035)) {
+          if(bounce == 2 && y >= 0) score1++;
+          if(bounce == 2 && y <= 0) score2++; 
+          if(y >= 0 && vy >= 0 && pass == 1) score1++;
+          else if(y <= 0 && vy <= 0 && pass == 0) score1++;
+          else 
+          {
+            score2++;
+            console.log(y + " " + vz);
+          }
+          pass = 0;
+          flag = 0;
+          ball.position.x = 0;
+          ball.position.y = 0;
+          ball.position.z = 1; 
+          paddle2.position.z = 1;
+          vx = 0;
+          vy = -0.15;
+          vz = 0;
+          bounce = 0;
+          console.log("restart");
+        } else {
+          if(Math.abs(y) <= 0.035) 
+          {
+            bounce = 0;
+            pass = 0;
+          }
+          if(Math.abs(x) <= 2.535 && z >= 0) 
+          {
+            pass = 1;
+          }
+          if(x >= -2.5 && x <= 2.5 && y >= -4.5 && y <= 4.5 && z <= 0.35)
+          {
+            paddle2.position.y = 4.5;
+            bounce++;
+            vz = -vz;
+          }
+          if(hitbox1.intersectsBox(hitbox3))
+          {
+            paddle1.position.y -= 0.025;
+            bounce = 0;
+            const v = new THREE.Vector3(vx, vy, vz);
+            v.applyAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI - paddle1.rotation.z);
+            v.applyAxisAngle(new THREE.Vector3(1, 0, 0), 2*Math.PI - paddle1.rotation.x);
+            v.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI - paddle1.rotation.y);
+            vx = v.x;
+            vy = v.y;
+            vz = v.z;
+          }
+          if(hitbox2.intersectsBox(hitbox3))
+          {
+            paddle2.position.y += 0.025;
+            bounce = 0;
+            const v = new THREE.Vector3(vx, vy, vz);
+            v.applyAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI - paddle2.rotation.z);
+            v.applyAxisAngle(new THREE.Vector3(1, 0, 0), 2*Math.PI - paddle2.rotation.x);
+            v.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI - paddle2.rotation.y);
+            vx = v.x;
+            vy = v.y;
+            vz = v.z;
+          }
+          ball.position.x += vx*0.1;
+          vz -= g*0.1;
+          ball.position.y += vy*0.1;
+          ball.position.z += vz*0.1;
+        }
+      };
+
+      var text2 = document.createElement('div');
+      text2.style.position = 'absolute';
+      text2.style.width = 100;
+      text2.style.height = 100;
+      text2.style.color = "white";
+      text2.style.top = 200 + 'px';
+      text2.style.left = 200 + 'px';
+      document.body.appendChild(text2);
+
+      function animate() {
+				requestAnimationFrame(animate);
+        text2.innerHTML = "Score - " + score1 + " : " + score2;
+        if(paddle1.position.y + 0.2 >= -0.35) 
+        {
+              paddle1.position.y = -0.35;
+        }
+        paddle2.position.x = ball.position.x;
+        if(ball.position.y > 0)
+        {
+          paddle2.position.z = ball.position.z;
+        }
+        paddle1.geometry.computeBoundingBox();
+        paddle2.geometry.computeBoundingBox();
+        ball.geometry.computeBoundingBox();
+        hitbox1.copy(paddle1.geometry.boundingBox).applyMatrix4(paddle1.matrixWorld);
+        hitbox2.copy(paddle2.geometry.boundingBox).applyMatrix4(paddle2.matrixWorld);
+        hitbox3.copy(ball.geometry.boundingBox).applyMatrix4(ball.matrixWorld);
+				renderer.render(scene, camera);
+			};
+
+			animate();
+		</script>
+	</body>
+</html>
