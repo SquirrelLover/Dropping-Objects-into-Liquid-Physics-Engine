@@ -1,4 +1,4 @@
-The projects made in CS club. 
+The projects made for CS club. 
 
 Dropping Box into Water - ?/?/22 - Uses density and viscosity to simulate dropping a box into a liquid - HTML/CSS/JS
 
